@@ -14,25 +14,25 @@ if($_SERVER['REQUEST_METHOD'] === 'POST')
         $result = mysqli_query($connection,$query) or die("Error in Query " . mysqli_error($connection));
         $user = mysqli_fetch_assoc($result);
 
-        if($user['role'] === 'admin' )
+        if($user &&  password_verify($password , $user['password']))
             {
-                $_SESSION['name'] = $user['first_name'] . ' '. $user['last_name'];
+                $_SESSION['name'] = $user['fname'] . ' '. $user['lname'];
                 $_SESSION['id'] = $user['id'];
                 $_SESSION['role'] = $user['role'];
                 $_SESSION['login'] = true;
-            //   echo "Login Successful";
-                 header("location: ./../admin/admin_dashboard.php");
-                 exit;
+
             }
-            elseif($user['role'] === 'user')
-            {
-                header("location: ./../user/dashboard.php");
-                 exit;
-            }
-            else
-            {
-                echo "Invalid Credentials";
-            }
+           
+            if($user['role'] == 'admin')
+                {
+                    header("location: ./../admin/admin_dashboard.php");
+                    exit;
+                } else {
+
+                header("location: ./../user/user_dashboard.php");
+                    exit;
+
+                }
 
     }
 
@@ -43,11 +43,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST')
 <?php 
 if(isset($_SESSION['login'])&& $_SESSION['role'] === 'admin'): 
     header("location: ./../admin/admin_dashboard.php");
-    exit;
-
-endif;
-if(isset($_SESSION['login'])&& $_SESSION['role'] === 'user'): 
-    header("location: ./../user/dashboard.php");
     exit;
 
 endif;
